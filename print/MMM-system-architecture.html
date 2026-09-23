@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MMM — System Architecture</title>
+  <style>
+    @page { size: 11in 8.5in; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #e8e4dc;
+      color: #122033;
+      font-family: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .toolbar {
+      position: fixed; top: 12px; right: 12px; z-index: 10;
+      display: flex; gap: 8px;
+    }
+    .toolbar button {
+      font: 600 12px/1 "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+      padding: 8px 12px; border: 0; border-radius: 4px;
+      background: #15304a; color: #fff; cursor: pointer;
+    }
+    .sheet {
+      width: 11in; height: 8.5in;
+      margin: 24px auto;
+      background: #fff;
+      padding: 0.26in 0.30in 0.20in;
+      display: flex; flex-direction: column; gap: 0.08in;
+      overflow: hidden;
+      border: 1px solid #cfc8bb;
+    }
+    header.top {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      border-bottom: 2.5px solid #15304a; padding-bottom: 6px; flex-shrink: 0;
+    }
+    .brand { display: flex; align-items: baseline; gap: 10px; }
+    .brand .mark {
+      font-size: 22px; font-weight: 800; letter-spacing: 0.08em; color: #a57c2c;
+    }
+    .brand h1 {
+      font-size: 18px; font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; color: #15304a;
+    }
+    .meta { text-align: right; font-size: 9.5px; color: #5a6572; line-height: 1.35; }
+    .meta strong { color: #122033; font-weight: 700; display: block; font-size: 11px; }
+    .row { display: flex; gap: 8px; }
+    .col { display: flex; flex-direction: column; gap: 5px; }
+    .label {
+      font-size: 8px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: #a57c2c;
+    }
+    .actors { flex-shrink: 0; }
+    .actor {
+      flex: 1; border: 1px solid #d4cec3; background: #f7f5f0;
+      padding: 6px 8px 7px; min-height: 0.62in;
+    }
+    .actor b { display: block; font-size: 12px; color: #15304a; }
+    .actor span { display: block; font-size: 9px; color: #5a6572; margin-top: 2px; line-height: 1.25; }
+    .actor.later { opacity: 0.7; border-style: dashed; background: #fff; }
+    .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; vertical-align: 1px; }
+    .a { background: #17627c; } .c { background: #2a6848; } .m { background: #4a3d6b; }
+    .platform {
+      flex: 1; min-height: 0;
+      border: 1.5px solid #15304a; padding: 8px 8px 8px;
+      display: flex; flex-direction: column; gap: 7px;
+      justify-content: space-between;
+      position: relative;
+    }
+    .platform-title {
+      position: absolute; top: -8px; left: 10px; background: #fff;
+      padding: 0 6px; font-size: 8px; font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #15304a;
+    }
+    .layer { display: flex; flex-direction: column; gap: 4px; }
+    .clients { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
+    .app {
+      border: 1px solid #cfc8bb; padding: 6px 8px 7px; background: #fff;
+    }
+    .app h3 { font-size: 11.5px; font-weight: 700; margin-bottom: 3px; }
+    .app ul { list-style: none; font-size: 9px; color: #3d4752; line-height: 1.32; columns: 2; column-gap: 8px; }
+    .app.athlete { border-top: 3px solid #17627c; }
+    .app.coach { border-top: 3px solid #2a6848; }
+    .app.admin { border-top: 3px solid #4a3d6b; }
+    .access {
+      display: grid; grid-template-columns: 1.1fr 1.4fr 1.1fr; gap: 6px;
+      background: #15304a; color: #fff; padding: 6px 8px;
+    }
+    .access div { font-size: 9.5px; line-height: 1.25; }
+    .access b { display: block; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: #e0c27a; margin-bottom: 1px; }
+    .services { display: grid; grid-template-columns: 1.15fr 1.15fr 1.15fr 0.9fr; gap: 6px; }
+    .svc { border: 1px solid #d4cec3; padding: 6px 7px 8px; display: flex; flex-direction: column; gap: 3px; }
+    .svc.core { background: #eef5f7; border-color: #17627c; }
+    .svc h3 { font-size: 11px; }
+    .svc p { font-size: 8.5px; color: #3d4752; line-height: 1.28; }
+    .chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 2px; }
+    .chip {
+      font-size: 8px; padding: 2px 5px; background: #fff; border: 1px solid #d4cec3;
+      color: #122033; white-space: nowrap;
+    }
+    .privacy {
+      display: grid; grid-template-columns: 0.7fr 1.15fr 1.15fr 1fr; gap: 6px;
+      background: #f8eef1; border: 1px solid #7c3044; padding: 6px 8px;
+    }
+    .privacy .k { font-size: 8px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #7c3044; }
+    .privacy .t { font-size: 10.5px; font-weight: 700; color: #122033; }
+    .privacy p { font-size: 8.5px; color: #3d4752; line-height: 1.25; margin-top: 1px; }
+    .data { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+    .store {
+      border: 1px solid #cfc8bb; background: #f7f5f0; padding: 5px 6px 6px;
+      text-align: center;
+    }
+    .store b { display: block; font-size: 9px; }
+    .store span { display: block; font-size: 8px; color: #5a6572; margin-top: 1px; line-height: 1.2; }
+    .store.lock { background: #f8eef1; border-color: #c9a3ad; }
+    .flows { flex-shrink: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+    .flow {
+      border-left: 2px solid #a57c2c; padding: 3px 0 3px 6px;
+    }
+    .flow b { display: block; font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; color: #a57c2c; }
+    .flow span { font-size: 8.5px; color: #3d4752; line-height: 1.22; }
+    footer.bottom {
+      flex-shrink: 0; display: flex; justify-content: space-between; align-items: flex-start;
+      border-top: 1px solid #d4cec3; padding-top: 5px; font-size: 8.5px; color: #5a6572; gap: 12px;
+    }
+    footer.bottom strong { color: #122033; }
+    .later-list { flex: 1; }
+    @media print {
+      html, body { background: #fff; }
+      .toolbar { display: none !important; }
+      .sheet { margin: 0; border: 0; width: 11in; height: 8.5in; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button type="button" onclick="window.print()">Print / Save PDF</button>
+  </div>
+  <div class="sheet">
+    <header class="top">
+      <div class="brand">
+        <div class="mark">M³</div>
+        <h1>System Architecture</h1>
+      </div>
+      <div class="meta">
+        <strong>Athlete Mindset Training Platform · v1</strong>
+      </div>
+    </header>
+
+    <section class="actors">
+      <div class="label">1 · Actors &amp; buying context</div>
+      <div class="row">
+        <div class="actor"><b><span class="dot a"></span>Athlete</b><span>Middle / high school. Owns login. Completes weekly Mental Reps and check-ins. Uses toolbox on demand.</span></div>
+        <div class="actor"><b><span class="dot c"></span>Coach</b><span>Builds the season. Sees team pulse (aggregates) and who completed. Gets a weekly coach tool. Never sees private answers.</span></div>
+        <div class="actor"><b><span class="dot m"></span>MMM Admin</b><span>Creates schools, teams, codes, access windows. Owns the content CMS. Manages coaches and accounts.</span></div>
+        <div class="actor"><b>School / program</b><span>Purchases team access (outside the app in v1). Receives a unique team join code after provisioning.</span></div>
+        <div class="actor later"><b>Later · Athletic director</b><span>Multi-team oversight. Not in v1. Payments stay out of band until admin billing is added.</span></div>
+      </div>
+    </section>
+
+    <section class="platform">
+      <span class="platform-title">MMM platform boundary</span>
+
+      <div class="layer">
+        <div class="label">2 · Presentation</div>
+        <div class="clients">
+          <article class="app athlete">
+            <h3>Athlete app</h3>
+            <ul>
+              <li>Simple home: this week only</li>
+              <li>Mental Rep (≤10 min)</li>
+              <li>30–60s weekly check-in</li>
+              <li>Mental Toolbox / Game Day</li>
+              <li>Season progress</li>
+              <li>Reminders</li>
+            </ul>
+          </article>
+          <article class="app coach">
+            <h3>Coach console</h3>
+            <ul>
+              <li>Season Builder</li>
+              <li>Recommended pathway option</li>
+              <li>Team Pulse dashboard</li>
+              <li>Completion (who / %)</li>
+              <li>Weekly coach tool</li>
+              <li>Completion reminders</li>
+            </ul>
+          </article>
+          <article class="app admin">
+            <h3>Admin CMS / ops</h3>
+            <ul>
+              <li>Schools, teams, codes</li>
+              <li>Access start / end</li>
+              <li>Modules, video, activities</li>
+              <li>Toolbox + coach resources</li>
+              <li>Reset passwords / coaches</li>
+              <li>Usage: teams, completion, pulse</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+
+      <div class="access">
+        <div><b>Identity</b>Athletes self-signup. Coach accounts are separate. Admin is operator-only.</div>
+        <div><b>Access</b>Unique team code binds athlete to team. Admin sets access start and end.</div>
+        <div><b>Authorization</b>Role views only. Coach cannot read individual reflections or 1–5 scores.</div>
+      </div>
+
+      <div class="layer">
+        <div class="label">3 · Domain services — three cores plus supporting</div>
+        <div class="services">
+          <article class="svc core">
+            <h3>Mental Reps</h3>
+            <p>Weekly athlete session. Target 5–8 min, cap 10. Same shape every week.</p>
+            <div class="chips">
+              <span class="chip">Check-in Q</span>
+              <span class="chip">Learn (video)</span>
+              <span class="chip">Interact</span>
+              <span class="chip">Apply</span>
+              <span class="chip">Challenge</span>
+            </div>
+          </article>
+          <article class="svc core">
+            <h3>Season Builder</h3>
+            <p>Coach sets week count, topics, module order. Weekly unlock. Optional recommended season.</p>
+            <div class="chips">
+              <span class="chip">Topics</span>
+              <span class="chip">Sequence</span>
+              <span class="chip">Unlock day</span>
+              <span class="chip">Recommended path</span>
+            </div>
+          </article>
+          <article class="svc core">
+            <h3>Team Pulse</h3>
+            <p>Weekly 1–5 ratings → team averages, trends, recommended coach focus. Never individual scores.</p>
+            <div class="chips">
+              <span class="chip">Energy</span>
+              <span class="chip">Confidence</span>
+              <span class="chip">Motivation</span>
+              <span class="chip">Pressure</span>
+              <span class="chip">Connection</span>
+              <span class="chip">Enjoyment</span>
+            </div>
+          </article>
+          <article class="svc">
+            <h3>Supporting</h3>
+            <div class="chips">
+              <span class="chip">Mental Toolbox</span>
+              <span class="chip">Coach tools</span>
+              <span class="chip">Completion</span>
+              <span class="chip">Progress</span>
+              <span class="chip">Notifications</span>
+              <span class="chip">Content CMS</span>
+            </div>
+            <p>Toolbox is on-demand. Coach tool matches this week’s module. Notifications: rep ready, check-in due, team % complete.</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="privacy">
+        <div>
+          <div class="k">4 · Privacy gate</div>
+          <div class="t">Minors · default private</div>
+        </div>
+        <div>
+          <div class="t">Coach can see</div>
+          <p>Participation (who finished). Team Pulse averages and arrows. Completion %. Recommended coach resource.</p>
+        </div>
+        <div>
+          <div class="t">Coach cannot see</div>
+          <p>Individual 1–5 scores. Reflection text. Toolbox use. Anything that identifies an athlete’s inner state.</p>
+        </div>
+        <div>
+          <div class="t">Do not build in v1</div>
+          <p>Anonymous mental-health disclosure. No escalation path exists yet. Open-ended answers only if legally cleared.</p>
+        </div>
+      </div>
+
+      <div class="layer">
+        <div class="label">5 · Data stores</div>
+        <div class="data">
+          <div class="store"><b>Accounts</b><span>Athlete, coach, admin · auth</span></div>
+          <div class="store"><b>Orgs / teams</b><span>School, team, join code, window</span></div>
+          <div class="store"><b>Seasons</b><span>Week map, unlock schedule</span></div>
+          <div class="store"><b>Content library</b><span>Modules, video, activities, tools</span></div>
+          <div class="store"><b>Pulse aggregates</b><span>Team means, trends, n-of-n</span></div>
+          <div class="store lock"><b>Private responses</b><span>Locked to athlete · not coach-readable</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="flows">
+      <div class="flow"><b>F1 Content</b><span>Admin CMS → library → Season Builder + Mental Reps + Toolbox + coach tools</span></div>
+      <div class="flow"><b>F2 Assign</b><span>Coach sequence → weekly unlock → athlete home “this week”</span></div>
+      <div class="flow"><b>F3 Deliver</b><span>Athlete completes Rep → progress + completion flag (name only to coach)</span></div>
+      <div class="flow"><b>F4 Pulse</b><span>Check-in scores → aggregator → coach Team Pulse (no identities)</span></div>
+      <div class="flow"><b>F5 Coach act</b><span>Pulse recommendation + matching coach conversation tool</span></div>
+      <div class="flow"><b>F6 Notify</b><span>Push/email: Rep ready, check-in due, team completion %</span></div>
+    </section>
+
+  </div>
+</body>
+</html>

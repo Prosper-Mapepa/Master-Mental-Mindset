@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MMM — Use-Case Flowchart</title>
+  <style>
+    @page { size: 11in 8.5in; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #e8e4dc;
+      color: #122033;
+      font-family: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .toolbar {
+      position: fixed; top: 12px; right: 12px; z-index: 10;
+      display: flex; gap: 8px;
+    }
+    .toolbar button {
+      font: 600 12px/1 "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+      padding: 8px 12px; border: 0; border-radius: 4px;
+      background: #15304a; color: #fff; cursor: pointer;
+    }
+    .sheet {
+      width: 11in; height: 8.5in;
+      margin: 24px auto;
+      background: #fff;
+      padding: 0.22in 0.26in 0.16in;
+      display: flex; flex-direction: column; gap: 6px;
+      overflow: hidden;
+      border: 1px solid #cfc8bb;
+    }
+    header.top {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      border-bottom: 2.5px solid #15304a; padding-bottom: 5px; flex-shrink: 0;
+    }
+    .brand { display: flex; align-items: baseline; gap: 10px; }
+    .brand .mark { font-size: 22px; font-weight: 800; letter-spacing: 0.08em; color: #a57c2c; }
+    .brand h1 {
+      font-size: 18px; font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; color: #15304a;
+    }
+    .meta { text-align: right; font-size: 9.5px; color: #5a6572; line-height: 1.35; }
+    .meta strong { color: #122033; font-weight: 700; display: block; font-size: 11px; }
+
+    .lane-label {
+      font-size: 8px; font-weight: 800; letter-spacing: 0.14em;
+      text-transform: uppercase; color: #a57c2c;
+    }
+    .flow {
+      display: flex; align-items: stretch; gap: 0;
+    }
+    .uc {
+      border: 1px solid #cfc8bb; background: #fff; padding: 4px 6px 5px;
+      min-width: 0; flex: 1;
+    }
+    .uc .id { font-size: 7.5px; font-weight: 800; letter-spacing: 0.08em; color: #a57c2c; }
+    .uc b { display: block; font-size: 9.5px; line-height: 1.2; margin-top: 1px; }
+    .uc p { font-size: 8px; color: #5a6572; line-height: 1.2; margin-top: 1px; }
+    .uc.start { background: #15304a; color: #fff; border-color: #15304a; }
+    .uc.start .id { color: #e0c27a; }
+    .uc.start p { color: #c9d3dc; }
+    .uc.end { background: #eef5f7; border-color: #17627c; }
+    .uc.alt { background: #f7f5f0; }
+    .arr {
+      width: 14px; flex: 0 0 14px;
+      display: flex; align-items: center; justify-content: center;
+      color: #a57c2c; font-size: 11px; font-weight: 700;
+    }
+    .arr.down { height: 11px; width: auto; flex: none; }
+    .split {
+      display: flex; flex-direction: column; justify-content: center;
+      width: 14px; flex: 0 0 14px; color: #a57c2c; font-size: 10px;
+    }
+
+    .mid {
+      flex: 1; min-height: 0;
+      display: grid; grid-template-columns: 1.18fr 0.18fr 1fr 0.82fr; gap: 7px;
+    }
+    .panel {
+      border: 1.5px solid #15304a; padding: 6px 7px 7px;
+      display: flex; flex-direction: column; gap: 5px; min-height: 0;
+      position: relative;
+    }
+    .panel .lane-label { margin-bottom: 1px; }
+    .panel-title {
+      position: absolute; top: -8px; left: 8px; background: #fff; padding: 0 5px;
+      font-size: 8px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #15304a;
+    }
+    .panel.athlete { border-color: #17627c; }
+    .panel.athlete .panel-title { color: #17627c; }
+    .panel.coach { border-color: #2a6848; }
+    .panel.coach .panel-title { color: #2a6848; }
+    .panel.admin { border-color: #4a3d6b; }
+    .panel.admin .panel-title { color: #4a3d6b; }
+    .vflow { display: flex; flex-direction: column; align-items: stretch; flex: 1; min-height: 0; }
+    .vflow .uc { flex: 0 0 auto; }
+    .sys {
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      padding: 4px 0;
+    }
+    .sys .pipe {
+      flex: 1; width: 1.5px; background: #a57c2c; min-height: 8px;
+    }
+    .diamond {
+      width: 86px; height: 86px;
+      background: #fff8ee; border: 1px solid #a57c2c;
+      transform: rotate(45deg);
+      display: flex; align-items: center; justify-content: center;
+      flex: 0 0 auto;
+    }
+    .diamond span {
+      transform: rotate(-45deg); text-align: center;
+      font-size: 8px; font-weight: 700; line-height: 1.2; width: 70px; color: #122033;
+    }
+    .sys-note { font-size: 8px; text-align: center; color: #5a6572; line-height: 1.2; max-width: 92px; }
+    .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+    .step {
+      background: #17627c; color: #fff; padding: 4px 4px 5px; text-align: center;
+    }
+    .step .id { color: #b9e0ec; font-size: 7px; font-weight: 800; letter-spacing: 0.06em; }
+    .step b { display: block; font-size: 8.5px; margin-top: 1px; }
+    .step p { font-size: 7.5px; color: #d5eef4; margin-top: 1px; line-height: 1.15; }
+    .hrow { display: flex; align-items: stretch; gap: 4px; }
+    .hrow .uc { flex: 1; }
+    .loop {
+      font-size: 8px; font-weight: 700; color: #17627c; text-align: center;
+      border: 1px dashed #17627c; padding: 3px; background: #eef5f7;
+    }
+    .side { display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+    .side .panel { flex: 1; }
+    .bottom {
+      display: grid; grid-template-columns: 1.1fr 1.5fr 1fr; gap: 7px; flex-shrink: 0;
+    }
+    .priv {
+      border: 1px solid #7c3044; background: #f8eef1; padding: 6px 8px;
+      display: grid; grid-template-columns: 0.7fr 1fr 1fr; gap: 8px;
+    }
+    .priv .k { font-size: 8px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #7c3044; }
+    .priv b { display: block; font-size: 10px; margin: 2px 0 1px; }
+    .priv p { font-size: 8.5px; color: #3d4752; line-height: 1.22; }
+    footer.bottom-bar {
+      flex-shrink: 0; display: flex; justify-content: space-between;
+      border-top: 1px solid #d4cec3; padding-top: 4px; font-size: 8px; color: #5a6572;
+    }
+    .yesno { font-size: 7.5px; font-weight: 800; letter-spacing: 0.06em; color: #a57c2c; text-align: center; }
+    @media print {
+      html, body { background: #fff; }
+      .toolbar { display: none !important; }
+      .sheet { margin: 0; border: 0; width: 11in; height: 8.5in; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button type="button" onclick="window.print()">Print / Save PDF</button>
+  </div>
+  <div class="sheet">
+    <header class="top">
+      <div class="brand">
+        <div class="mark">M³</div>
+        <h1>Use-Case Flowchart</h1>
+      </div>
+      <div class="meta">
+        <strong>All v1 use cases · Athlete Mindset Training Platform</strong>
+      </div>
+    </header>
+
+    <div>
+      <div class="lane-label">A · Provision — workshop to season start</div>
+      <div class="flow" style="margin-top:3px">
+        <div class="uc start"><div class="id">UC01</div><b>Workshop</b><p>Live MMM session. Context, not software.</p></div>
+        <div class="arr">→</div>
+        <div class="uc"><div class="id">UC02</div><b>Purchase</b><p>School / program buys team access (out of band in v1).</p></div>
+        <div class="arr">→</div>
+        <div class="uc"><div class="id">UC03</div><b>Admin provisions</b><p>School, team, unique join code, access start/end.</p></div>
+        <div class="arr">→</div>
+        <div class="uc"><div class="id">UC04</div><b>Coach login</b><p>Separate coach account. Receives team code.</p></div>
+        <div class="arr">→</div>
+        <div class="uc alt"><div class="id">UC05</div><b>Build season</b><p>Set weeks, pick topics, order modules — or Use Recommended Season.</p></div>
+        <div class="arr">→</div>
+        <div class="uc"><div class="id">UC06–07</div><b>Athletes join</b><p>Self-signup. Code binds athlete to the correct team.</p></div>
+        <div class="arr">→</div>
+        <div class="uc end"><div class="id">UC08</div><b>Season begins</b><p>Weekly unlock clock starts. Training is live.</p></div>
+      </div>
+    </div>
+
+    <div class="mid">
+      <section class="panel athlete">
+        <span class="panel-title">B · Athlete weekly loop</span>
+        <div class="vflow">
+          <div class="uc end"><div class="id">UC09</div><b>Unlock this week’s module</b><p>Chosen day (e.g. Monday). Home shows only this week: Mental Rep + check-in.</p></div>
+          <div class="arr down">↓</div>
+          <div class="uc"><div class="id">UC10</div><b>Notify athlete</b><p>“Your Mental Rep for this week is ready.”</p></div>
+          <div class="arr down">↓</div>
+          <div>
+            <div class="lane-label" style="margin-bottom:3px">UC11 Mental Rep — 5–8 min, cap 10 — same shape every week</div>
+            <div class="steps">
+              <div class="step"><div class="id">11A</div><b>Question</b><p>30 sec check-in prompt</p></div>
+              <div class="step"><div class="id">11B</div><b>Learn</b><p>2–3 min video</p></div>
+              <div class="step"><div class="id">11C</div><b>Interact</b><p>Scenario / activity</p></div>
+              <div class="step"><div class="id">11D</div><b>Apply</b><p>Personal tool / phrase</p></div>
+              <div class="step"><div class="id">11E</div><b>Challenge</b><p>Use it this week</p></div>
+            </div>
+          </div>
+          <div class="arr down">↓</div>
+          <div class="hrow">
+            <div class="uc"><div class="id">UC12</div><b>Pulse check-in</b><p>30–60s · six 1–5 scales · stored private</p></div>
+            <div class="uc"><div class="id">UC13</div><b>View progress</b><p>e.g. 8/12 reps · optional 4-week streak</p></div>
+            <div class="uc"><div class="id">UC14</div><b>Check-in reminder</b><p>“Don’t forget your weekly check-in.”</p></div>
+          </div>
+          <div class="loop" style="margin-top:auto">↻ Next week → UC09 unlock. Loop runs for the length of the coach-built season.</div>
+        </div>
+      </section>
+
+      <aside class="sys">
+        <div class="sys-note" style="font-weight:800;color:#a57c2c;letter-spacing:.08em">SYSTEM</div>
+        <div class="pipe"></div>
+        <div class="diamond"><span>UC15 Aggregate Pulse · strip identity</span></div>
+        <div class="pipe"></div>
+        <div class="sys-note">Individual 1–5 scores never leave the privacy gate toward the coach console.</div>
+        <div class="pipe"></div>
+        <div class="yesno">YES · team only</div>
+      </aside>
+
+      <section class="panel coach">
+        <span class="panel-title">C · Coach weekly loop</span>
+        <div class="vflow">
+          <div class="uc"><div class="id">UC16</div><b>Team Pulse dashboard</b><p>Averages /5, week-over-week arrows, n of n checked in. Team as a whole — not a roster of feelings.</p></div>
+          <div class="arr down">↓</div>
+          <div class="uc"><div class="id">UC17</div><b>Need recommendation</b><p>e.g. pressure ↑ two weeks → “Managing Pressure” + 5-minute coach reset activity.</p></div>
+          <div class="arr down">↓</div>
+          <div class="uc"><div class="id">UC18</div><b>Completion dashboard</b><p>Team % and who finished / not. Participation is visible. Answers are not.</p></div>
+          <div class="arr down">↓</div>
+          <div class="uc"><div class="id">UC19</div><b>Weekly coach tool</b><p>Conversation starter matching this week’s athlete module. Coach participates, not only assigns.</p></div>
+          <div class="arr down">↓</div>
+          <div class="uc"><div class="id">UC20</div><b>Notify coach</b><p>“73% of your team has completed this week’s Mental Rep.”</p></div>
+        </div>
+      </section>
+
+      <div class="side">
+        <section class="panel" style="border-color:#15304a">
+          <span class="panel-title">D · On-demand athlete</span>
+          <div class="uc"><div class="id">UC21</div><b>Mental Toolbox</b><p>Before competition, after a bad performance, confidence, pressure, mistakes, communication, motivation, overthinking.</p></div>
+          <div class="uc" style="margin-top:4px"><div class="id">UC22</div><b>Game Day · I Need Help With…</b><p>Home shortcuts. Not tied to the weekly unlock. Available anytime after join.</p></div>
+        </section>
+        <section class="panel admin">
+          <span class="panel-title">E · Admin (continuous)</span>
+          <div class="uc"><div class="id">UC23</div><b>Content CMS</b><p>Add/edit/delete modules, videos, questions, interactive activities. No developer required.</p></div>
+          <div class="uc" style="margin-top:4px"><div class="id">UC24</div><b>Library extras</b><p>Mental Toolbox items and matching coach resources.</p></div>
+          <div class="uc" style="margin-top:4px"><div class="id">UC25</div><b>Ops</b><p>Manage coaches, reset passwords/accounts, access windows, codes.</p></div>
+          <div class="uc" style="margin-top:4px"><div class="id">UC26</div><b>Platform metrics</b><p>Athletes, active teams, completion, team Pulse (aggregated).</p></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="bottom">
+      <section class="panel" style="padding:6px 8px">
+        <span class="panel-title">F · Notifications</span>
+        <p style="font-size:9px;line-height:1.3;margin-top:4px"><b>Athlete:</b> UC10 Rep ready · UC14 check-in due<br /><b>Coach:</b> UC20 team completion %<br /><b>Channel:</b> push if native app; otherwise email/in-app.</p>
+      </section>
+      <section class="priv">
+        <div>
+          <div class="k">G · Privacy gate</div>
+          <b>UC27 Decision</b>
+          <p>After every athlete write: is this participation, or a private response?</p>
+        </div>
+        <div>
+          <b>Participation → coach</b>
+          <p>Completed / not complete. Team Pulse averages. Check-in count. Recommended resource.</p>
+        </div>
+        <div>
+          <b>Private → lock</b>
+          <p>Reflections, 1–5 scores, toolbox use. Admin may see operational aggregates, not a counseling file.</p>
+        </div>
+      </section>
+      <section class="panel" style="padding:6px 8px;border-style:dashed">
+        <span class="panel-title">Out of flowchart / v1</span>
+        <p style="font-size:9px;line-height:1.3;margin-top:4px">Payments, athletic-director multi-team, parent portal, Mental Reps unlocking toolbox items, anonymous mental-health disclosure (do not build).</p>
+      </section>
+    </div>
+
+  </div>
+</body>
+</html>

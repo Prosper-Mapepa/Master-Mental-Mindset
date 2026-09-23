@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MMM — High-Level System Architecture</title>
+  <style>
+    @page { size: 11in 8.5in; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #e8e4dc;
+      color: #122033;
+      font-family: "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .toolbar {
+      position: fixed; top: 12px; right: 12px; z-index: 10;
+    }
+    .toolbar button {
+      font: 600 12px/1 "Avenir Next", "Segoe UI", Helvetica, Arial, sans-serif;
+      padding: 8px 12px; border: 0; border-radius: 4px;
+      background: #15304a; color: #fff; cursor: pointer;
+    }
+    .sheet {
+      width: 11in; height: 8.5in;
+      margin: 24px auto;
+      background: #fff;
+      padding: 0.30in 0.36in 0.28in;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      border: 1px solid #cfc8bb;
+    }
+    header.top {
+      display: flex; align-items: baseline; justify-content: space-between;
+      border-bottom: 2.5px solid #15304a; padding-bottom: 10px;
+      flex-shrink: 0;
+    }
+    .brand { display: flex; align-items: baseline; gap: 10px; }
+    .brand .mark { font-size: 22px; font-weight: 800; letter-spacing: 0.08em; color: #a57c2c; }
+    .brand h1 {
+      font-size: 18px; font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; color: #15304a;
+    }
+    .meta { font-size: 12px; font-weight: 600; color: #5a6572; }
+    .stack {
+      flex: 1; min-height: 0;
+      display: flex; flex-direction: column; justify-content: space-evenly;
+    }
+    .layer { display: flex; flex-direction: column; gap: 8px; }
+    .label {
+      font-size: 10px; font-weight: 800; letter-spacing: 0.14em;
+      text-transform: uppercase; color: #a57c2c;
+    }
+    .cols { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .card {
+      border: 1px solid #d4cec3; padding: 14px 16px 16px; background: #f7f5f0;
+    }
+    .card.white { background: #fff; }
+    .card.core { background: #eef5f7; border-color: #17627c; }
+    .card h3 { font-size: 16px; color: #15304a; margin-bottom: 4px; }
+    .card p { font-size: 13px; color: #3d4752; line-height: 1.35; }
+    .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: 1px; }
+    .a { background: #17627c; } .c { background: #2a6848; } .m { background: #4a3d6b; }
+    .athlete { border-top: 4px solid #17627c; }
+    .coach { border-top: 4px solid #2a6848; }
+    .admin { border-top: 4px solid #4a3d6b; }
+    .down {
+      text-align: center; color: #a57c2c; font-size: 18px; font-weight: 700;
+      line-height: 1; height: 18px;
+    }
+    .privacy {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+      background: #f8eef1; border: 1px solid #7c3044; padding: 14px 18px;
+    }
+    .privacy h3 { font-size: 15px; margin-bottom: 4px; }
+    .privacy p { font-size: 13px; color: #3d4752; line-height: 1.35; }
+    @media print {
+      html, body { background: #fff; }
+      .toolbar { display: none !important; }
+      .sheet { margin: 0; border: 0; width: 11in; height: 8.5in; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button type="button" onclick="window.print()">Print / Save PDF</button>
+  </div>
+  <div class="sheet">
+    <header class="top">
+      <div class="brand">
+        <div class="mark">M³</div>
+        <h1>System Architecture</h1>
+      </div>
+      <div class="meta">Athlete Mindset Training Platform</div>
+    </header>
+
+    <div class="stack">
+      <section class="layer">
+        <div class="label">1 · People</div>
+        <div class="cols">
+          <article class="card"><h3><span class="dot a"></span>Athlete</h3><p>Does a short weekly Mental Rep and check-in. Opens tools when needed.</p></article>
+          <article class="card"><h3><span class="dot c"></span>Coach</h3><p>Builds the season. Sees the team picture and who finished — not private answers.</p></article>
+          <article class="card"><h3><span class="dot m"></span>Admin</h3><p>Creates teams and codes. Publishes all content without a developer.</p></article>
+        </div>
+      </section>
+
+      <div class="down">↓</div>
+
+      <section class="layer">
+        <div class="label">2 · What they open</div>
+        <div class="cols">
+          <article class="card white athlete"><h3>Athlete app</h3><p>This week’s training, check-in, toolbox, progress.</p></article>
+          <article class="card white coach"><h3>Coach console</h3><p>Season Builder, team pulse, completion, weekly coach tool.</p></article>
+          <article class="card white admin"><h3>Admin CMS</h3><p>Teams, codes, modules, videos, tools, access dates.</p></article>
+        </div>
+      </section>
+
+      <div class="down">↓</div>
+
+      <section class="layer">
+        <div class="label">3 · Three products</div>
+        <div class="cols">
+          <article class="card core"><h3>Mental Reps</h3><p>5–8 minutes each week. Learn, practice, apply.</p></article>
+          <article class="card core"><h3>Season Builder</h3><p>Coach picks topics and order. One module unlocks each week.</p></article>
+          <article class="card core"><h3>Team Pulse</h3><p>A 30-second check-in becomes team averages — never individual scores.</p></article>
+        </div>
+      </section>
+
+      <div class="down">↓</div>
+
+      <section class="layer">
+        <div class="label">4 · Privacy</div>
+        <div class="privacy">
+          <div><h3>Coach can see</h3><p>Who completed training, team averages, and a suggested focus for the week.</p></div>
+          <div><h3>Coach cannot see</h3><p>Individual scores, reflections, or how any one athlete feels.</p></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</body>
+</html>
