@@ -1,30 +1,21 @@
 import { useState } from "react";
 
-export default function VideoEmbed({ id, title, caption, onPlay }) {
+export default function VideoEmbed({ src = "/video.mp4", title, caption, onPlay }) {
   const [play, setPlay] = useState(false);
-  const src = `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&autoplay=1`;
+
+  function start() {
+    setPlay(true);
+    onPlay?.();
+  }
 
   return (
     <figure className="video-card">
       <div className="video-frame">
         {play ? (
-          <iframe
-            src={src}
-            title={title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-          />
+          <video src={src} title={title} controls autoPlay playsInline onPlay={() => onPlay?.()} />
         ) : (
-          <button
-            className="video-play"
-            type="button"
-            onClick={() => {
-              setPlay(true);
-              onPlay?.();
-            }}
-            aria-label={`Play ${title}`}
-          >
-            <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" />
+          <button className="video-play" type="button" onClick={start} aria-label={`Play ${title}`}>
+            <video src={`${src}#t=0.1`} muted preload="metadata" playsInline />
             <span className="play-btn" aria-hidden="true">▶</span>
           </button>
         )}

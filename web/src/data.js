@@ -67,7 +67,7 @@ export const currentRep = {
   learn: {
     title: "Control the controllables",
     body: "Pressure is normal. The skill is shrinking the moment to the next action you can actually take — breath, stance, phrase — then playing that.",
-    videoId: "DNtDMDfxbt0",
+    videoSrc: "/video.mp4",
     videoTitle: "3 Mental Game Tools That Stop Pre-Game Nerves",
   },
   scenario: {

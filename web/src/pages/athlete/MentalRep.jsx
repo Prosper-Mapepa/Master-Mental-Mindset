@@ -86,7 +86,7 @@ export default function MentalRep() {
           <h2>Learn</h2>
           <p>{currentRep.learn.body}</p>
           <VideoEmbed
-            id={currentRep.learn.videoId}
+            src={currentRep.learn.videoSrc}
             title={currentRep.learn.videoTitle}
             caption="Watch, then take the next step."
             onPlay={() => setWatched(true)}
