@@ -13,7 +13,7 @@ export default function Gate() {
       <header className="gate-bar rise d0">
         <Link to="/" className="gate-logo">
           <span className="logo-sq">M³</span>
-          Master Mental Mindset
+          <span className="gate-name">Master Mental Mindset</span>
         </Link>
         <nav className="gate-actions">
           <Link to="/login">Sign in</Link>

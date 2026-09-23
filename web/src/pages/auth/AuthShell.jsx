@@ -7,7 +7,7 @@ export default function AuthShell({ children }) {
       <header className="gate-bar">
         <Link to="/" className="gate-logo">
           <span className="logo-sq">M³</span>
-          Master Mental Mindset
+          <span className="gate-name">Master Mental Mindset</span>
         </Link>
       </header>
       <main className="auth-main">{children}</main>

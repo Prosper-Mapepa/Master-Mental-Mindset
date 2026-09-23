@@ -35,7 +35,6 @@ export default function Login() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="jordan@lincolnhigh.edu"
               />
             </div>
             <div className="field">
@@ -46,7 +45,6 @@ export default function Login() {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
               />
             </div>
           </div>

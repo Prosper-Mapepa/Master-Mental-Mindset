@@ -4,22 +4,22 @@ import { athlete, coach, admin, team, notifications } from "../data";
 
 const nav = {
   athlete: [
-    { to: "/athlete", label: "Home", end: true },
-    { to: "/athlete/rep", label: "Mental Rep" },
-    { to: "/athlete/check-in", label: "Check-in" },
-    { to: "/athlete/toolbox", label: "Toolbox" },
-    { to: "/athlete/progress", label: "Season" },
+    { to: "/athlete", label: "Home", short: "Home", end: true },
+    { to: "/athlete/rep", label: "Mental Rep", short: "Rep" },
+    { to: "/athlete/check-in", label: "Check-in", short: "Check" },
+    { to: "/athlete/toolbox", label: "Toolbox", short: "Tools" },
+    { to: "/athlete/progress", label: "Season", short: "Season" },
   ],
   coach: [
-    { to: "/coach", label: "Team Pulse", end: true },
-    { to: "/coach/completion", label: "Who finished" },
-    { to: "/coach/season", label: "Season plan" },
-    { to: "/coach/tool", label: "Coach tool" },
+    { to: "/coach", label: "Team Pulse", short: "Pulse", end: true },
+    { to: "/coach/completion", label: "Who finished", short: "Done" },
+    { to: "/coach/season", label: "Season plan", short: "Season" },
+    { to: "/coach/tool", label: "Coach tool", short: "Tool" },
   ],
   admin: [
-    { to: "/admin", label: "Overview", end: true },
-    { to: "/admin/teams", label: "Schools" },
-    { to: "/admin/content", label: "Content" },
+    { to: "/admin", label: "Overview", short: "Home", end: true },
+    { to: "/admin/teams", label: "Schools", short: "Schools" },
+    { to: "/admin/content", label: "Content", short: "Content" },
   ],
 };
 
@@ -28,6 +28,15 @@ const people = {
   coach: { name: `Coach ${coach.lastName}` },
   admin: { name: `${admin.firstName} ${admin.lastName}` },
 };
+
+function NavItems({ role }) {
+  return nav[role].map((item) => (
+    <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => (isActive ? "active" : "")}>
+      <span className="nav-full">{item.label}</span>
+      <span className="nav-short">{item.short}</span>
+    </NavLink>
+  ));
+}
 
 export default function Layout({ role }) {
   const [open, setOpen] = useState(false);
@@ -45,11 +54,7 @@ export default function Layout({ role }) {
           </span>
         </Link>
         <nav className="nav">
-          {nav[role].map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => (isActive ? "active" : "")}>
-              {item.label}
-            </NavLink>
-          ))}
+          <NavItems role={role} />
         </nav>
         <Link className="switch" to="/">
           Sign out
@@ -57,6 +62,10 @@ export default function Layout({ role }) {
       </aside>
       <div className="workspace">
         <header className="topbar">
+          <Link to="/" className="top-brand">
+            <span className="logo-sq">M³</span>
+            <strong>Mindset</strong>
+          </Link>
           <div className="crumb">
             <span className="role-badge">{role}</span>
             <span aria-hidden="true">·</span>
@@ -86,6 +95,7 @@ export default function Layout({ role }) {
               </div>
             )}
             <div className="who">{person.name}</div>
+            <Link className="top-out" to="/">Sign out</Link>
           </div>
         </header>
         <div className="body">
@@ -93,6 +103,9 @@ export default function Layout({ role }) {
             <Outlet />
           </div>
         </div>
+        <nav className="dock" aria-label="Main">
+          <NavItems role={role} />
+        </nav>
       </div>
     </div>
   );

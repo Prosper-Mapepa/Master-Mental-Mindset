@@ -48,11 +48,11 @@ export default function Signup() {
           <div className="field-row">
             <div className="field">
               <label htmlFor="first">First name</label>
-              <input id="first" value={first} onChange={(e) => setFirst(e.target.value)} placeholder="Jordan" />
+              <input id="first" value={first} onChange={(e) => setFirst(e.target.value)} />
             </div>
             <div className="field">
               <label htmlFor="last">Last name</label>
-              <input id="last" value={last} onChange={(e) => setLast(e.target.value)} placeholder="Reyes" />
+              <input id="last" value={last} onChange={(e) => setLast(e.target.value)} />
             </div>
           </div>
           <div className="field-row">
@@ -64,7 +64,6 @@ export default function Signup() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@school.edu"
               />
             </div>
             <div className="field">
@@ -75,7 +74,6 @@ export default function Signup() {
                 autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="At least 8 characters"
               />
             </div>
           </div>
@@ -86,7 +84,6 @@ export default function Signup() {
                 id="code"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                placeholder="LNK-BB-8K2"
                 autoCapitalize="characters"
               />
             </div>
